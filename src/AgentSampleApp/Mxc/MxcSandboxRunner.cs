@@ -100,17 +100,26 @@ public sealed class MxcSandboxRunner : ISandboxRunner
         }
     }
 
+    // ANSI/OSC control sequences emitted by the executor's pseudo-terminal
+    // (cursor moves, screen clears, the window-title escape naming wxc-exec.exe).
+    private static readonly Regex TerminalSequences =
+        new(@"\x1B\][^\x07\x1B]*(?:\x07|\x1B\\)|\x1B[@-_][0-?]*[ -/]*[@-~]", RegexOptions.Compiled);
+
+    // Harmless launcher warning CPython prints when it can't resolve its own real path
+    // under the AppContainer tier. It precedes every Python run; drop it as pure noise.
+    private static readonly Regex CosmeticNoise =
+        new(@"^Failed to find real location of .*\r?\n?", RegexOptions.Compiled | RegexOptions.Multiline);
+
     /// <summary>
     /// The executor runs the command under a pseudo-terminal, so stdout/stderr arrive
-    /// wrapped in ANSI/OSC control sequences (cursor moves, screen clears, and the
-    /// window-title escape that prints the wxc-exec.exe path). Strip them so the
-    /// transcript shows clean text.
+    /// wrapped in terminal control sequences and a couple of cosmetic warnings. Strip
+    /// them so the transcript shows clean text.
     /// </summary>
-    private static string CleanOutput(string? s) =>
-        string.IsNullOrEmpty(s)
-            ? string.Empty
-            : Regex.Replace(
-                s,
-                @"\x1B\][^\x07\x1B]*(?:\x07|\x1B\\)|\x1B[@-_][0-?]*[ -/]*[@-~]",
-                string.Empty).Trim();
+    private static string CleanOutput(string? s)
+    {
+        if (string.IsNullOrEmpty(s)) return string.Empty;
+        s = TerminalSequences.Replace(s, string.Empty);
+        s = CosmeticNoise.Replace(s, string.Empty);
+        return s.Trim();
+    }
 }

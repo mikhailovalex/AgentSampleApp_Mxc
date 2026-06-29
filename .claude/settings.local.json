@@ -7,7 +7,10 @@
       "PowerShell(dotnet build \"C:\\\\Users\\\\alexander.mikhailov\\\\Downloads\\\\AgentSampleApp\\\\src\\\\AgentSampleApp\\\\AgentSampleApp.csproj\" -c Debug 2>&1)",
       "Bash(ls \"C:/mxc-release-binaries/x64\" | grep -i -E \"host|prep\" ; echo \"--- all exe ---\"; ls \"C:/mxc-release-binaries/x64\")",
       "Bash(sleep 3; echo \"=== tail ===\"; cat \"C:/Users/ALEXAN~1.MIK/AppData/Local/Temp/claude/C--Users-alexander-mikhailov-Downloads-AgentSampleApp/da0f03e7-f000-4708-bf02-e8321aea2afe/tasks/bn5d0dh8h.output\" 2>/dev/null | tail -5; echo \"=== check Python314 dir contents ===\"; ls \"C:/Users/alexander.mikhailov/AppData/Local/Programs/Python/Python314/\" 2>/dev/null | head -30)",
-      "PowerShell($env:MXC_BIN_DIR = \"C:\\\\mxc-release-binaries\"; $proj = \"C:\\\\Users\\\\ALEXAN~1.MIK\\\\AppData\\\\Local\\\\Temp\\\\claude\\\\C--Users-alexander-mikhailov-Downloads-AgentSampleApp\\\\da0f03e7-f000-4708-bf02-e8321aea2afe\\\\scratchpad\\\\MxcProbe\"; dotnet run --project $proj -c Debug 2>&1 | Select-Object -Last 16)"
+      "PowerShell($env:MXC_BIN_DIR = \"C:\\\\mxc-release-binaries\"; $proj = \"C:\\\\Users\\\\ALEXAN~1.MIK\\\\AppData\\\\Local\\\\Temp\\\\claude\\\\C--Users-alexander-mikhailov-Downloads-AgentSampleApp\\\\da0f03e7-f000-4708-bf02-e8321aea2afe\\\\scratchpad\\\\MxcProbe\"; dotnet run --project $proj -c Debug 2>&1 | Select-Object -Last 16)",
+      "PowerShell($env:MXC_BIN_DIR = \"C:\\\\mxc-release-binaries\"; $proj = \"C:\\\\Users\\\\ALEXAN~1.MIK\\\\AppData\\\\Local\\\\Temp\\\\claude\\\\C--Users-alexander-mikhailov-Downloads-AgentSampleApp\\\\da0f03e7-f000-4708-bf02-e8321aea2afe\\\\scratchpad\\\\MxcProbe\"; dotnet run --project $proj -c Debug 2>&1 | Select-Object -Last 45)",
+      "PowerShell(dotnet run --project $proj -c Debug 2>&1)",
+      "PowerShell($proj = \"C:\\\\Users\\\\ALEXAN~1.MIK\\\\AppData\\\\Local\\\\Temp\\\\claude\\\\C--Users-alexander-mikhailov-Downloads-AgentSampleApp\\\\da0f03e7-f000-4708-bf02-e8321aea2afe\\\\scratchpad\\\\MxcProbe\")"
     ]
   }
 }
