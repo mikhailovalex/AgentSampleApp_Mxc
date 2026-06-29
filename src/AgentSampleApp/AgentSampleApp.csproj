@@ -1,0 +1,50 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>WinExe</OutputType>
+    <!-- net10.0-windows is required: Sabbour.Mxc.Sdk targets .NET 10. -->
+    <TargetFramework>net10.0-windows</TargetFramework>
+    <UseWindowsForms>true</UseWindowsForms>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <LangVersion>latest</LangVersion>
+    <RootNamespace>AgentSampleApp</RootNamespace>
+    <Platforms>AnyCPU;x64;ARM64</Platforms>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <!--
+      DevExpress WinForms. Restore from your licensed DevExpress NuGet feed
+      (https://nuget.devexpress.com/<feed-authorization-key>/api).
+      Set Version to the build you have installed; the controls used here
+      (XtraForm, MemoEdit, SimpleButton, ToggleSwitch, PanelControl, LabelControl)
+      have been API-stable for many releases.
+    -->
+    <PackageReference Include="DevExpress.Win" Version="26.1.3" />
+
+    <!-- AI agent abstractions + function calling middleware -->
+    <PackageReference Include="Microsoft.Extensions.AI" Version="10.7.0" />
+    <PackageReference Include="Microsoft.Extensions.AI.OpenAI" Version="10.7.0" />
+
+    <!-- Provider SDKs. Keep only the one you use; both are referenced for the demo. -->
+    <PackageReference Include="OpenAI" Version="2.11.0" />
+    <PackageReference Include="Azure.AI.OpenAI" Version="2.9.0-beta.1" />
+
+    <!-- MXC sandbox: experimental community .NET port of @microsoft/mxc-sdk.
+         Swap for the official Microsoft package when microsoft/mxc#484 ships. -->
+    <PackageReference Include="Sabbour.Mxc.Sdk" Version="0.1.2" />
+
+    <!-- Configuration -->
+    <PackageReference Include="Microsoft.Extensions.Configuration" Version="11.0.0-preview.5.26302.115" />
+    <PackageReference Include="Microsoft.Extensions.Configuration.Json" Version="11.0.0-preview.5.26302.115" />
+    <PackageReference Include="Microsoft.Extensions.Configuration.EnvironmentVariables" Version="11.0.0-preview.5.26302.115" />
+    <PackageReference Include="Microsoft.Extensions.Configuration.Binder" Version="11.0.0-preview.5.26302.115" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Update="appsettings.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
+
+</Project>
