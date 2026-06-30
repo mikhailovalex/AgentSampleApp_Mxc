@@ -4,13 +4,11 @@ partial class MainForm
 {
     private System.ComponentModel.IContainer components = null;
 
-    private DevExpress.XtraEditors.PanelControl panelTop;
-    private DevExpress.XtraEditors.ToggleSwitch toggleStrict;
+    private DevExpress.XtraEditors.PanelControl panelStatus;
     private DevExpress.XtraEditors.LabelControl lblBackend;
-    private DevExpress.XtraEditors.MemoEdit memoTranscript;
-    private DevExpress.XtraEditors.PanelControl panelBottom;
-    private DevExpress.XtraEditors.MemoEdit memoInput;
-    private DevExpress.XtraEditors.SimpleButton btnSend;
+    private DevExpress.XtraEditors.LabelControl lblWorkspace;
+    private DevExpress.XtraBars.Navigation.AccordionControl accordion;
+    private DevExpress.XtraEditors.PanelControl panelContent;
 
     protected override void Dispose(bool disposing)
     {
@@ -21,108 +19,77 @@ partial class MainForm
         base.Dispose(disposing);
     }
 
-    private void InitializeComponent()
-    {
-        this.panelTop = new DevExpress.XtraEditors.PanelControl();
-        this.toggleStrict = new DevExpress.XtraEditors.ToggleSwitch();
-        this.lblBackend = new DevExpress.XtraEditors.LabelControl();
-        this.memoTranscript = new DevExpress.XtraEditors.MemoEdit();
-        this.panelBottom = new DevExpress.XtraEditors.PanelControl();
-        this.memoInput = new DevExpress.XtraEditors.MemoEdit();
-        this.btnSend = new DevExpress.XtraEditors.SimpleButton();
-        ((System.ComponentModel.ISupportInitialize)(this.panelTop)).BeginInit();
-        this.panelTop.SuspendLayout();
-        ((System.ComponentModel.ISupportInitialize)(this.toggleStrict.Properties)).BeginInit();
-        ((System.ComponentModel.ISupportInitialize)(this.memoTranscript.Properties)).BeginInit();
-        ((System.ComponentModel.ISupportInitialize)(this.panelBottom)).BeginInit();
-        this.panelBottom.SuspendLayout();
-        ((System.ComponentModel.ISupportInitialize)(this.memoInput.Properties)).BeginInit();
-        this.SuspendLayout();
-        //
-        // panelTop
-        //
-        this.panelTop.Controls.Add(this.lblBackend);
-        this.panelTop.Controls.Add(this.toggleStrict);
-        this.panelTop.Dock = System.Windows.Forms.DockStyle.Top;
-        this.panelTop.Location = new System.Drawing.Point(0, 0);
-        this.panelTop.Name = "panelTop";
-        this.panelTop.Size = new System.Drawing.Size(900, 48);
-        this.panelTop.TabIndex = 0;
-        //
-        // toggleStrict
-        //
-        this.toggleStrict.Location = new System.Drawing.Point(12, 11);
-        this.toggleStrict.Name = "toggleStrict";
-        this.toggleStrict.Properties.OffText = "Permissive";
-        this.toggleStrict.Properties.OnText = "Restricted";
-        this.toggleStrict.Size = new System.Drawing.Size(170, 25);
-        this.toggleStrict.TabIndex = 0;
-        this.toggleStrict.IsOn = true;
-        //
+    private void InitializeComponent() {
+        panelStatus = new DevExpress.XtraEditors.PanelControl();
+        lblWorkspace = new DevExpress.XtraEditors.LabelControl();
+        lblBackend = new DevExpress.XtraEditors.LabelControl();
+        accordion = new DevExpress.XtraBars.Navigation.AccordionControl();
+        panelContent = new DevExpress.XtraEditors.PanelControl();
+        ((System.ComponentModel.ISupportInitialize)panelStatus).BeginInit();
+        panelStatus.SuspendLayout();
+        ((System.ComponentModel.ISupportInitialize)accordion).BeginInit();
+        ((System.ComponentModel.ISupportInitialize)panelContent).BeginInit();
+        SuspendLayout();
+        // 
+        // panelStatus
+        // 
+        panelStatus.Controls.Add(lblWorkspace);
+        panelStatus.Controls.Add(lblBackend);
+        panelStatus.Dock = DockStyle.Top;
+        panelStatus.Location = new Point(0, 0);
+        panelStatus.Name = "panelStatus";
+        panelStatus.Size = new Size(960, 34);
+        panelStatus.TabIndex = 0;
+        // 
+        // lblWorkspace
+        // 
+        lblWorkspace.Location = new Point(360, 9);
+        lblWorkspace.Name = "lblWorkspace";
+        lblWorkspace.Size = new Size(83, 16);
+        lblWorkspace.TabIndex = 1;
+        lblWorkspace.Text = "Workspace: …";
+        // 
         // lblBackend
-        //
-        this.lblBackend.Location = new System.Drawing.Point(200, 16);
-        this.lblBackend.Name = "lblBackend";
-        this.lblBackend.Size = new System.Drawing.Size(70, 16);
-        this.lblBackend.TabIndex = 1;
-        this.lblBackend.Text = "MXC backend: …";
-        //
-        // memoTranscript
-        //
-        this.memoTranscript.Dock = System.Windows.Forms.DockStyle.Fill;
-        this.memoTranscript.Location = new System.Drawing.Point(0, 48);
-        this.memoTranscript.Name = "memoTranscript";
-        this.memoTranscript.Properties.ReadOnly = true;
-        this.memoTranscript.Properties.ScrollBars = System.Windows.Forms.ScrollBars.Vertical;
-        this.memoTranscript.Size = new System.Drawing.Size(900, 392);
-        this.memoTranscript.TabIndex = 1;
-        //
-        // panelBottom
-        //
-        this.panelBottom.Controls.Add(this.memoInput);
-        this.panelBottom.Controls.Add(this.btnSend);
-        this.panelBottom.Dock = System.Windows.Forms.DockStyle.Bottom;
-        this.panelBottom.Location = new System.Drawing.Point(0, 440);
-        this.panelBottom.Name = "panelBottom";
-        this.panelBottom.Size = new System.Drawing.Size(900, 110);
-        this.panelBottom.TabIndex = 2;
-        //
-        // memoInput
-        //
-        this.memoInput.Dock = System.Windows.Forms.DockStyle.Fill;
-        this.memoInput.Location = new System.Drawing.Point(2, 2);
-        this.memoInput.Name = "memoInput";
-        this.memoInput.Size = new System.Drawing.Size(778, 106);
-        this.memoInput.TabIndex = 0;
-        //
-        // btnSend
-        //
-        this.btnSend.Dock = System.Windows.Forms.DockStyle.Right;
-        this.btnSend.Location = new System.Drawing.Point(780, 2);
-        this.btnSend.Name = "btnSend";
-        this.btnSend.Size = new System.Drawing.Size(118, 106);
-        this.btnSend.TabIndex = 1;
-        this.btnSend.Text = "Send\r\n(Ctrl+Enter)";
-        //
+        // 
+        lblBackend.Location = new Point(12, 9);
+        lblBackend.Name = "lblBackend";
+        lblBackend.Size = new Size(97, 16);
+        lblBackend.TabIndex = 0;
+        lblBackend.Text = "MXC backend: …";
+        // 
+        // accordion
+        // 
+        accordion.AllowItemSelection = true;
+        accordion.Dock = DockStyle.Left;
+        accordion.Location = new Point(0, 34);
+        accordion.Name = "accordion";
+        accordion.Size = new Size(210, 595);
+        accordion.TabIndex = 1;
+        // 
+        // panelContent
+        // 
+        panelContent.Dock = DockStyle.Fill;
+        panelContent.Location = new Point(210, 34);
+        panelContent.Name = "panelContent";
+        panelContent.Size = new Size(750, 595);
+        panelContent.TabIndex = 2;
+        // 
         // MainForm
-        //
-        this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 14F);
-        this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-        this.ClientSize = new System.Drawing.Size(900, 550);
-        this.Controls.Add(this.memoTranscript);
-        this.Controls.Add(this.panelBottom);
-        this.Controls.Add(this.panelTop);
-        this.Name = "MainForm";
-        this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
-        this.Text = "Agent Sample — WinForms + DevExpress + MXC";
-        ((System.ComponentModel.ISupportInitialize)(this.toggleStrict.Properties)).EndInit();
-        ((System.ComponentModel.ISupportInitialize)(this.panelTop)).EndInit();
-        this.panelTop.ResumeLayout(false);
-        this.panelTop.PerformLayout();
-        ((System.ComponentModel.ISupportInitialize)(this.memoTranscript.Properties)).EndInit();
-        ((System.ComponentModel.ISupportInitialize)(this.memoInput.Properties)).EndInit();
-        ((System.ComponentModel.ISupportInitialize)(this.panelBottom)).EndInit();
-        this.panelBottom.ResumeLayout(false);
-        this.ResumeLayout(false);
+        // 
+        AutoScaleDimensions = new SizeF(7F, 16F);
+        AutoScaleMode = AutoScaleMode.Font;
+        ClientSize = new Size(960, 629);
+        Controls.Add(panelContent);
+        Controls.Add(accordion);
+        Controls.Add(panelStatus);
+        Name = "MainForm";
+        StartPosition = FormStartPosition.CenterScreen;
+        Text = "Agent Sample — WinForms + DevExpress + MXC";
+        ((System.ComponentModel.ISupportInitialize)panelStatus).EndInit();
+        panelStatus.ResumeLayout(false);
+        panelStatus.PerformLayout();
+        ((System.ComponentModel.ISupportInitialize)accordion).EndInit();
+        ((System.ComponentModel.ISupportInitialize)panelContent).EndInit();
+        ResumeLayout(false);
     }
 }

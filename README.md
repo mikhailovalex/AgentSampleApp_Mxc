@@ -58,6 +58,38 @@ SDK lands (`microsoft/mxc#484`), you replace that one class.
 
 ---
 
+## The UI — chat plus sandbox examples
+
+The window is a shell: an accordion on the left switches the content area between the
+free-form **Chat** and four **sandbox capability** panels. Each example panel runs the
+*same* policy two ways:
+
+- **Run (direct)** calls the sandbox with no LLM and no API key — deterministic and instant.
+- **Ask agent** sends a prompt to an agent whose `run_code` tool is bound to that panel's
+  live controls, so the model runs under exactly the policy you set. The teaching point:
+  access is decided by the policy, not the model.
+
+| Panel | Controls | Demonstrates |
+| --- | --- | --- |
+| **Files** | file path, access level (None / Read-only / Read-write / Denied), Read/Write | `FilesystemPolicy` — the same file is allowed or denied by its grant |
+| **Network** | outbound toggle, URL | `NetworkPolicy` — the same request is blocked or allowed by `AllowOutbound` (per-host lists aren't supported on Windows yet) |
+| **Timeout** | timeout (ms), sleep (s) | `TimeoutMs` — a run that exceeds the limit is killed |
+| **Hardened** | deny folder, create-windows, clipboard, input-injection, timeout | a composed lock-down: a denied path overrides a read grant while legit work still runs |
+
+> The app launches even without an API key: the chat and every **Ask agent** section are
+> disabled, but every **Run (direct)** button still works. The **Network**, **Timeout**, and
+> agent demos for **Files**/**Hardened** also need Python on the host (granted via
+> `Agent:ToolPaths`); the **Hardened** UI fields (windows / clipboard / input injection) shape
+> the policy for GUI subprocesses, so they have no visible effect on the console commands here.
+
+To express more than the network on/off toggle, the sandbox seam gained an options-based
+overload, `ISandboxRunner.RunAsync(command, SandboxRunOptions, …)`. `SandboxRunOptions` is an
+application type (filesystem grants, denied paths, allow-listed hosts, timeout, UI policy);
+`MxcSandboxRunner` still owns the single translation to the SDK's `SandboxPolicy`. The
+original `RunAsync(command, bool restricted, …)` overload stays as a shortcut.
+
+---
+
 ## Quick start
 
 For the impatient (each step is explained in detail below):
@@ -490,8 +522,11 @@ Environment variables:
 | [`Agent/AgentService.cs`](src/AgentSampleApp/Agent/AgentService.cs) | Holds history, exposes tools, returns final answers. |
 | [`Agent/CodeExecutionTool.cs`](src/AgentSampleApp/Agent/CodeExecutionTool.cs) | Defines the `run_code` tool. |
 | [`Mxc/ISandboxRunner.cs`](src/AgentSampleApp/Mxc/ISandboxRunner.cs) | Sandbox abstraction (the seam for swapping SDKs). |
+| [`Mxc/SandboxRunOptions.cs`](src/AgentSampleApp/Mxc/SandboxRunOptions.cs) | App-level policy (fs grants, denied paths, hosts, timeout, UI) the example panels build. |
 | [`Mxc/MxcSandboxRunner.cs`](src/AgentSampleApp/Mxc/MxcSandboxRunner.cs) | **The only file that touches the MXC SDK.** Policy, shell wrapping, output cleanup. |
-| [`MainForm.cs`](src/AgentSampleApp/MainForm.cs) | UI: input, transcript, the Restricted/Permissive toggle. |
+| [`MainForm.cs`](src/AgentSampleApp/MainForm.cs) | The shell: accordion navigation + content area hosting one screen at a time. |
+| [`Ui/ChatControl.cs`](src/AgentSampleApp/Ui/ChatControl.cs) | The free-form chat (transcript, input, Restricted/Permissive toggle). |
+| [`Ui/Examples/`](src/AgentSampleApp/Ui/Examples) | The four capability panels + their shared base (`SandboxExampleControlBase`). |
 | [`Examples/ExampleTools.cs`](src/AgentSampleApp/Examples/ExampleTools.cs) | Sample custom tools (calculator, file search, file writer). |
 | [`Examples/ExamplePolicies.cs`](src/AgentSampleApp/Examples/ExamplePolicies.cs) | Sample `SandboxPolicy` recipes. |
 | [`Examples/SandboxQuickstart.cs`](src/AgentSampleApp/Examples/SandboxQuickstart.cs) | Minimal no-LLM sandbox usage. |

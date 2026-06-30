@@ -23,4 +23,19 @@ public interface ISandboxRunner
         bool restricted,
         string workspaceDir,
         CancellationToken cancellationToken = default);
+
+    /// <summary>
+    /// Runs a command under a fully specified policy. This is the richer entry point the
+    /// UI examples use to exercise filesystem grants, network allow-lists, timeouts and
+    /// UI policy. The simpler <see cref="RunAsync(string, bool, string, CancellationToken)"/>
+    /// overload is a shortcut for the Restricted/Permissive toggle.
+    /// </summary>
+    /// <param name="command">Shell command line to execute.</param>
+    /// <param name="options">The policy to apply for this run.</param>
+    /// <param name="workspaceDir">Always-read/write working directory exposed to the sandbox.</param>
+    Task<SandboxRunResult> RunAsync(
+        string command,
+        SandboxRunOptions options,
+        string workspaceDir,
+        CancellationToken cancellationToken = default);
 }

@@ -55,6 +55,11 @@ public static class ExamplePolicies
     /// <summary>
     /// Recipe 4 — Host allow-list. Outbound is on, but only the named hosts are reachable —
     /// a middle ground between Restricted and fully Permissive.
+    ///
+    /// Note: current Windows executors do not support per-host allow/block lists — they reject
+    /// any policy that sets them with "network.allowedHosts / network.blockedHosts are not yet
+    /// supported on Windows". Use this on an executor that supports it, or rely on
+    /// <see cref="NetworkPolicy.AllowOutbound"/> plus a proxy.
     /// </summary>
     public static SandboxPolicy NetworkAllowList(string workspace, params string[] allowedHosts) => new()
     {

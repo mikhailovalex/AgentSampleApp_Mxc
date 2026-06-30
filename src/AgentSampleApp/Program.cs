@@ -32,21 +32,20 @@ internal static class Program
 
         ISandboxRunner runner = new MxcSandboxRunner(agentConfig.ToolPaths);
 
-        IChatClient chatClient;
+        // The chat client is optional: if no API key/endpoint is configured we still launch,
+        // with the chat and the per-example "Ask agent" sections disabled. The direct
+        // (no-LLM) sandbox examples work regardless.
+        IChatClient? chatClient = null;
+        string? chatUnavailableReason = null;
         try
         {
             chatClient = ChatClientFactory.Create(agentConfig);
         }
         catch (Exception ex)
         {
-            MessageBox.Show(
-                ex.Message,
-                "Agent configuration error",
-                MessageBoxButtons.OK,
-                MessageBoxIcon.Error);
-            return;
+            chatUnavailableReason = ex.Message;
         }
 
-        Application.Run(new MainForm(chatClient, runner, agentConfig, workspace));
+        Application.Run(new MainForm(chatClient, runner, agentConfig, workspace, chatUnavailableReason));
     }
 }

@@ -33,29 +33,27 @@ public sealed class MxcSandboxRunner : ISandboxRunner
             ? $"{string.Join(", ", _support.AvailableMethods)} (tier: {_support.IsolationTier})"
             : "executor not found — set MXC_BIN_DIR";
 
-    public async Task<SandboxRunResult> RunAsync(
+    /// <summary>
+    /// Restricted/Permissive shortcut. Delegates to the options-based overload so there is
+    /// a single code path that talks to the SDK.
+    /// </summary>
+    public Task<SandboxRunResult> RunAsync(
         string command,
         bool restricted,
+        string workspaceDir,
+        CancellationToken cancellationToken = default)
+        => RunAsync(command, SandboxRunOptions.ForToggle(restricted), workspaceDir, cancellationToken);
+
+    public async Task<SandboxRunResult> RunAsync(
+        string command,
+        SandboxRunOptions options,
         string workspaceDir,
         CancellationToken cancellationToken = default)
     {
         // A SandboxPolicy expresses *intent* ("no outbound network", "only this
         // folder is writable"). The SDK translates it to a backend config and the
         // executor enforces it at the kernel boundary.
-        var policy = new SandboxPolicy
-        {
-            // Pin the schema to the executor you ship. v0.6.x executors -> 0.6.0-alpha.
-            Version = "0.6.0-alpha",
-            Network = new NetworkPolicy { AllowOutbound = !restricted },
-            Filesystem = new FilesystemPolicy
-            {
-                ReadwritePaths = [workspaceDir],
-                // Interpreters (Python, Node, ...) live outside the workspace; grant the
-                // sandbox read access to their install folders or they fail to load their
-                // own DLLs (surfaces as "python314.dll was not found" from inside).
-                ReadonlyPaths = _toolPaths,
-            },
-        };
+        var policy = BuildPolicy(options, workspaceDir);
 
         // The native executor launches the command directly via CreateProcessW — there is
         // no shell in between. Bare builtins (echo, type), pipes, and redirects therefore
@@ -69,6 +67,10 @@ public sealed class MxcSandboxRunner : ISandboxRunner
             ? $"set \"PATH={string.Join(";", _toolPaths)};%PATH%\" & "
             : string.Empty;
         var shellCommand = $"cmd.exe /s /c \"{pathPrefix}{command}\"";
+
+        // The result's Restricted flag tracks the network dimension, matching the original
+        // toggle semantics (restricted == no outbound network).
+        var restricted = !options.AllowOutbound;
 
         try
         {
@@ -99,6 +101,63 @@ public sealed class MxcSandboxRunner : ISandboxRunner
                 Backend: BackendSummary);
         }
     }
+
+    /// <summary>
+    /// Translates an application-level <see cref="SandboxRunOptions"/> into the SDK's
+    /// <see cref="SandboxPolicy"/>. The workspace is always read/write; the configured tool
+    /// paths are always read-only; the per-run path lists layer on top.
+    /// </summary>
+    private SandboxPolicy BuildPolicy(SandboxRunOptions options, string workspaceDir)
+    {
+        // Interpreters (Python, Node, ...) live outside the workspace; grant the sandbox
+        // read access to their install folders or they fail to load their own DLLs
+        // (surfaces as "python314.dll was not found" from inside).
+        string[] readonlyPaths = [.. _toolPaths, .. options.ReadonlyPaths];
+        string[] readwritePaths = [workspaceDir, .. options.ReadwritePaths];
+
+        // Only attach a UI policy when something is actually locked down. Leaving Ui null
+        // preserves the permissive default the Restricted/Permissive toggle has always used.
+        UiPolicy? ui = null;
+        if (!options.AllowWindows
+            || options.Clipboard != ClipboardAccess.All
+            || !options.AllowInputInjection)
+        {
+            ui = new UiPolicy
+            {
+                AllowWindows = options.AllowWindows,
+                Clipboard = MapClipboard(options.Clipboard),
+                AllowInputInjection = options.AllowInputInjection,
+            };
+        }
+
+        return new SandboxPolicy
+        {
+            // Pin the schema to the executor you ship. v0.6.x executors -> 0.6.0-alpha.
+            Version = "0.6.0-alpha",
+            TimeoutMs = options.TimeoutMs,
+            // Network access is all-or-nothing: the Windows executor rejects per-host
+            // allow/block lists, so only AllowOutbound is set here.
+            Network = new NetworkPolicy
+            {
+                AllowOutbound = options.AllowOutbound,
+            },
+            Filesystem = new FilesystemPolicy
+            {
+                ReadwritePaths = readwritePaths,
+                ReadonlyPaths = readonlyPaths,
+                DeniedPaths = options.DeniedPaths.Count > 0 ? [.. options.DeniedPaths] : null,
+            },
+            Ui = ui,
+        };
+    }
+
+    private static ClipboardPolicy MapClipboard(ClipboardAccess access) => access switch
+    {
+        ClipboardAccess.None => ClipboardPolicy.None,
+        ClipboardAccess.Read => ClipboardPolicy.Read,
+        ClipboardAccess.Write => ClipboardPolicy.Write,
+        _ => ClipboardPolicy.All,
+    };
 
     // ANSI/OSC control sequences emitted by the executor's pseudo-terminal
     // (cursor moves, screen clears, the window-title escape naming wxc-exec.exe).

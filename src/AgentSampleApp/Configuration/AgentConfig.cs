@@ -11,7 +11,7 @@ public sealed class AgentConfig
     public string Provider { get; set; } = "OpenAI";
 
     /// <summary>Model id (OpenAI) or deployment name (Azure OpenAI).</summary>
-    public string Model { get; set; } = "gpt-4.1-mini";
+    public string Model { get; set; } = "Demo";
 
     /// <summary>
     /// Azure OpenAI endpoint. Ignored for the OpenAI provider. If left empty for the
