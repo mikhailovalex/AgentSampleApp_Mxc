@@ -35,20 +35,18 @@ public sealed class FileAccessControl : SandboxExampleControlBase
         "its folder. It starts read-only so the file reads; switch to None or Denied to watch " +
         "the same command get blocked ('Denied' wins even over a read grant).";
 
-    protected override int PolicyHeight => 120;
-
     protected override string DefaultPrompt =>
         $"Read the file at {DemoFile} and show me its contents.";
 
     private void BuildPolicyControls()
     {
-        _opToggle = new ToggleSwitch { Dock = DockStyle.Left, Width = 160 };
+        _opToggle = new ToggleSwitch();
         _opToggle.Properties.OffText = "Read";
         _opToggle.Properties.OnText = "Write";
         _opToggle.Toggled += (_, _) => RefreshCommand();
-        PolicyGroup.Controls.Add(LabeledRow("Operation:", _opToggle));
+        AddPolicyControl("Operation:", _opToggle);
 
-        _accessRadio = new RadioGroup { Dock = DockStyle.Fill };
+        _accessRadio = new RadioGroup();
         _accessRadio.Properties.Columns = 4;
         _accessRadio.Properties.Items.AddRange(new[]
         {
@@ -59,11 +57,14 @@ public sealed class FileAccessControl : SandboxExampleControlBase
         });
         _accessRadio.EditValue = FileAccess.ReadOnly;
         _accessRadio.SelectedIndexChanged += (_, _) => RefreshCommand();
-        PolicyGroup.Controls.Add(LabeledRow("Folder access:", _accessRadio));
+        _accessRadio.AutoSizeInLayoutControl = true;
+        AddPolicyControl("Folder access:", _accessRadio);
 
-        _pathEdit = new TextEdit { Dock = DockStyle.Fill, Text = DemoFile };
+        _pathEdit = new TextEdit { Text = DemoFile };
         _pathEdit.EditValueChanged += (_, _) => RefreshCommand();
-        var btnBrowse = new SimpleButton { Text = "Browse…", Dock = DockStyle.Right, Width = 90 };
+        AddPolicyControl("File path:", _pathEdit);
+
+        var btnBrowse = new SimpleButton { Text = "Browse…" };
         btnBrowse.Click += (_, _) =>
         {
             using var dlg = new OpenFileDialog();
@@ -73,12 +74,7 @@ public sealed class FileAccessControl : SandboxExampleControlBase
                 RefreshCommand();
             }
         };
-        var pathRow = new Panel { Dock = DockStyle.Top, Height = 30 };
-        var pathLabel = new LabelControl { Text = "File path:", Dock = DockStyle.Left, Width = 90 };
-        pathRow.Controls.Add(_pathEdit);
-        pathRow.Controls.Add(btnBrowse);
-        pathRow.Controls.Add(pathLabel);
-        PolicyGroup.Controls.Add(pathRow);
+        AddPolicyControl(string.Empty, btnBrowse);
     }
 
     protected override SandboxRunOptions BuildOptions()
@@ -100,17 +96,6 @@ public sealed class FileAccessControl : SandboxExampleControlBase
         return _opToggle.IsOn
             ? $"echo sandbox wrote at %TIME%>> \"{path}\" & type \"{path}\""
             : $"type \"{path}\"";
-    }
-
-    /// <summary>A 30px row with a left caption and a docked field.</summary>
-    private static Panel LabeledRow(string caption, Control field)
-    {
-        var row = new Panel { Dock = DockStyle.Top, Height = 30 };
-        field.Dock = field.Dock == DockStyle.None ? DockStyle.Fill : field.Dock;
-        var label = new LabelControl { Text = caption, Dock = DockStyle.Left, Width = 90 };
-        row.Controls.Add(field);
-        row.Controls.Add(label);
-        return row;
     }
 
     private static void EnsureDemoFile()

@@ -32,22 +32,20 @@ public sealed class NetworkControl : SandboxExampleControlBase
         "sandbox. Turn it on and the same command succeeds. (Per-host allow/block lists are not " +
         "supported on Windows executors yet, so this is a whole-network toggle.)";
 
-    protected override int PolicyHeight => 90;
-
     protected override string DefaultPrompt =>
         $"Fetch {DefaultUrl} and show me the response body.";
 
     private void BuildPolicyControls()
     {
-        _url = new TextEdit { Dock = DockStyle.Fill, Text = DefaultUrl };
+        _url = new TextEdit { Text = DefaultUrl };
         _url.EditValueChanged += (_, _) => RefreshCommand();
-        PolicyGroup.Controls.Add(LabeledRow("URL:", _url));
+        AddPolicyControl("URL:", _url);
 
-        _outbound = new ToggleSwitch { Dock = DockStyle.Left, Width = 200 };
+        _outbound = new ToggleSwitch();
         _outbound.Properties.OffText = "Blocked";
         _outbound.Properties.OnText = "Allowed";
         _outbound.Toggled += (_, _) => RefreshCommand();
-        PolicyGroup.Controls.Add(LabeledRow("Outbound network:", _outbound));
+        AddPolicyControl("Outbound network:", _outbound);
     }
 
     protected override SandboxRunOptions BuildOptions() =>
@@ -58,14 +56,5 @@ public sealed class NetworkControl : SandboxExampleControlBase
         var url = _url.Text;
         return "python -c \"import urllib.request as u; " +
                $"print(u.urlopen('{url}', timeout=10).read().decode('utf-8','replace')[:300])\"";
-    }
-
-    private static Panel LabeledRow(string caption, Control field)
-    {
-        var row = new Panel { Dock = DockStyle.Top, Height = 30 };
-        var label = new LabelControl { Text = caption, Dock = DockStyle.Left, Width = 110 };
-        row.Controls.Add(field);
-        row.Controls.Add(label);
-        return row;
     }
 }

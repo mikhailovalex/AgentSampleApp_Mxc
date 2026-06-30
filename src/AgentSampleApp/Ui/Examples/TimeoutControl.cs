@@ -26,18 +26,16 @@ public sealed class TimeoutControl : SandboxExampleControlBase
         "the command is killed mid-run; raise the timeout (or lower the sleep) and it completes. " +
         "The agent below runs under the same limit.";
 
-    protected override int PolicyHeight => 90;
-
     protected override string DefaultPrompt =>
         "Run a Python one-liner that sleeps for 5 seconds and then prints DONE.";
 
     private void BuildPolicyControls()
     {
         _sleepSeconds = Spin(min: 0, max: 30, value: 5);
-        PolicyGroup.Controls.Add(LabeledRow("Sleep (seconds):", _sleepSeconds));
+        AddPolicyControl("Sleep (seconds):", _sleepSeconds);
 
         _timeoutMs = Spin(min: 500, max: 15000, value: 3000, increment: 500);
-        PolicyGroup.Controls.Add(LabeledRow("Timeout (ms):", _timeoutMs));
+        AddPolicyControl("Timeout (ms):", _timeoutMs);
     }
 
     protected override SandboxRunOptions BuildOptions() =>
@@ -51,7 +49,7 @@ public sealed class TimeoutControl : SandboxExampleControlBase
 
     private SpinEdit Spin(int min, int max, int value, int increment = 1)
     {
-        var spin = new SpinEdit { Dock = DockStyle.Left, Width = 140 };
+        var spin = new SpinEdit();
         spin.Properties.IsFloatValue = false;
         spin.Properties.MinValue = min;
         spin.Properties.MaxValue = max;
@@ -59,14 +57,5 @@ public sealed class TimeoutControl : SandboxExampleControlBase
         spin.Value = value;
         spin.EditValueChanged += (_, _) => RefreshCommand();
         return spin;
-    }
-
-    private static Panel LabeledRow(string caption, Control field)
-    {
-        var row = new Panel { Dock = DockStyle.Top, Height = 30 };
-        var label = new LabelControl { Text = caption, Dock = DockStyle.Left, Width = 120 };
-        row.Controls.Add(field);
-        row.Controls.Add(label);
-        return row;
     }
 }

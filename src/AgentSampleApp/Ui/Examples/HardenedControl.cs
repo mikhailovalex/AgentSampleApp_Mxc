@@ -38,39 +38,37 @@ public sealed class HardenedControl : SandboxExampleControlBase
         "grant — yet the harmless computation after it still runs. The UI fields apply to GUI " +
         "subprocesses, so they shape the policy without changing this console output.";
 
-    protected override int PolicyHeight => 180;
-
     protected override string DefaultPrompt =>
         $"Try to read the file at {DemoFile}. If it is blocked, just compute 2+2 instead.";
 
     private void BuildPolicyControls()
     {
-        _timeoutMs = new SpinEdit { Dock = DockStyle.Left, Width = 140 };
+        _timeoutMs = new SpinEdit();
         _timeoutMs.Properties.IsFloatValue = false;
         _timeoutMs.Properties.MinValue = 1000;
         _timeoutMs.Properties.MaxValue = 30000;
         _timeoutMs.Properties.Increment = 1000;
         _timeoutMs.Value = 10000;
-        PolicyGroup.Controls.Add(LabeledRow("Timeout (ms):", _timeoutMs));
+        AddPolicyControl("Timeout (ms):", _timeoutMs);
 
         _allowInput = Toggle("Blocked", "Allowed", isOn: false);
-        PolicyGroup.Controls.Add(LabeledRow("Input injection:", _allowInput));
+        AddPolicyControl("Input injection:", _allowInput);
 
-        _clipboard = new ComboBoxEdit { Dock = DockStyle.Left, Width = 140 };
+        _clipboard = new ComboBoxEdit();
         _clipboard.Properties.TextEditStyle = TextEditStyles.DisableTextEditor;
         _clipboard.Properties.Items.AddRange(new object[]
         {
             ClipboardAccess.None, ClipboardAccess.Read, ClipboardAccess.Write, ClipboardAccess.All,
         });
         _clipboard.SelectedItem = ClipboardAccess.None;
-        PolicyGroup.Controls.Add(LabeledRow("Clipboard:", _clipboard));
+        AddPolicyControl("Clipboard:", _clipboard);
 
         _allowWindows = Toggle("Blocked", "Allowed", isOn: false);
-        PolicyGroup.Controls.Add(LabeledRow("Create windows:", _allowWindows));
+        AddPolicyControl("Create windows:", _allowWindows);
 
         _denyFolder = Toggle("Off", "On", isOn: true);
         _denyFolder.Toggled += (_, _) => RefreshCommand();
-        PolicyGroup.Controls.Add(LabeledRow("Deny demo folder:", _denyFolder));
+        AddPolicyControl("Deny demo folder:", _denyFolder);
     }
 
     protected override SandboxRunOptions BuildOptions()
@@ -93,19 +91,10 @@ public sealed class HardenedControl : SandboxExampleControlBase
 
     private ToggleSwitch Toggle(string off, string on, bool isOn)
     {
-        var toggle = new ToggleSwitch { Dock = DockStyle.Left, Width = 160, IsOn = isOn };
+        var toggle = new ToggleSwitch { IsOn = isOn };
         toggle.Properties.OffText = off;
         toggle.Properties.OnText = on;
         return toggle;
-    }
-
-    private static Panel LabeledRow(string caption, Control field)
-    {
-        var row = new Panel { Dock = DockStyle.Top, Height = 30 };
-        var label = new LabelControl { Text = caption, Dock = DockStyle.Left, Width = 130 };
-        row.Controls.Add(field);
-        row.Controls.Add(label);
-        return row;
     }
 
     private static void EnsureDemoFile()
